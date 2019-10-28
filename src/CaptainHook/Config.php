@@ -6,9 +6,12 @@ namespace Boesing\CaptainhookVendorResolver\CaptainHook;
 use Boesing\CaptainhookVendorResolver\Exception\HookAlreadyExistsException;
 use Boesing\CaptainhookVendorResolver\Hook\Hook;
 use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
+use CaptainHook\App\Hooks;
 use OutOfBoundsException;
 use RuntimeException;
 use Webmozart\Assert\Assert;
+use function array_diff_key;
+use function array_intersect_key;
 use function file_get_contents;
 use function file_put_contents;
 use function is_writable;
@@ -30,6 +33,11 @@ final class Config implements ConfigInterface
     private $path = '';
 
     /**
+     * @var array
+     */
+    private $config = [];
+
+    /**
      * @param HookInterface[] $hooks
      */
     private function __construct(array $hooks)
@@ -41,8 +49,12 @@ final class Config implements ConfigInterface
 
     public static function fromFile(string $path): self
     {
-        $instance = self::fromArray((array) json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR));
+        $config = (array) json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+        $hooks = (array) array_intersect_key($config, Hooks::getValidHooks());
+        $config = array_diff_key($config, $hooks);
+        $instance = self::fromArray($hooks);
         $instance->path = $path;
+        $instance->config = $config;
 
         return $instance;
     }
@@ -51,7 +63,7 @@ final class Config implements ConfigInterface
     {
         Assert::isMap($hooks);
         $converted = [];
-        foreach ($hooks as $name => $hook) {
+        foreach (array_intersect_key($hooks, Hooks::getValidHooks()) as $name => $hook) {
             $converted[$name] = Hook::fromDefinition($name, $hook);
         }
 
@@ -96,7 +108,7 @@ final class Config implements ConfigInterface
             $data[$hook->name()] = $hook->data();
         }
 
-        return $data;
+        return array_merge($data, $this->config);
     }
 
     public function remove(HookInterface $hook): void
