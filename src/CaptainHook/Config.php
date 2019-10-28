@@ -17,6 +17,7 @@ use function file_put_contents;
 use function is_writable;
 use function json_decode;
 use function json_encode;
+use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
 
 final class Config implements ConfigInterface
@@ -98,7 +99,7 @@ final class Config implements ConfigInterface
 
     private function json(): string
     {
-        return json_encode($this->data(), JSON_THROW_ON_ERROR);
+        return json_encode($this->data(), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
     }
 
     private function data(): array
