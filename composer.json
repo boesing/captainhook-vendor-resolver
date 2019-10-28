@@ -1,0 +1,36 @@
+{
+    "name": "boesing/captainhook-vendor-resolver",
+    "type": "library",
+    "description": "CaptainHook extension which parses vendor packages after installation to merge projects captainhook.json with hooks provided by vendor packages",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Maximilian Bösing",
+            "email": "2189546+boesing@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "php": "^7.3",
+        "composer-plugin-api": "^1.1",
+        "captainhook/captainhook": "^4.5",
+        "webmozart/assert": "^1.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Boesing\\CaptainhookVendorResolver\\": "src/"
+        }
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true
+    },
+    "scripts": {
+        "analyze": "phpstan analyze --no-progress"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "composer/composer": "^1.9",
+        "phpstan/phpstan": "^0.11.19"
+    }
+}
