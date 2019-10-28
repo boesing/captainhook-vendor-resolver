@@ -67,7 +67,7 @@ final class Config implements ConfigInterface
             $converted[$name] = Hook::fromDefinition($name, $hook);
         }
 
-        return new self($hooks);
+        return new self($converted);
     }
 
     public function add(HookInterface $hook): void
