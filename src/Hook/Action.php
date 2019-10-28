@@ -54,7 +54,7 @@ final class Action implements ActionInterface
     public static function fromDefinition(array $definition): self
     {
         $action = $definition['action'] ?? '';
-        $options = $definition['options'] ?? [];
+        $options = new Options($definition['options'] ?? []);
         $conditions = array_map(function (array $condition): ConditionInterface {
             return Condition::fromDefinition($condition);
         }, $definition['conditions'] ?? []);
