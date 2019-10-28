@@ -19,6 +19,7 @@ use Composer\DependencyResolver\Operation\UninstallOperation;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Factory;
 use Composer\Installer\PackageEvent;
+use Composer\Installer\PackageEvents;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginInterface;
@@ -63,8 +64,8 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
     public static function getSubscribedEvents()
     {
         return [
-            'post-package-install' => 'onPostPackageInstall',
-            'post-package-uninstall' => 'onPostPackageUninstall',
+            PackageEvents::POST_PACKAGE_INSTALL => 'onPostPackageInstall',
+            PackageEvents::POST_PACKAGE_UNINSTALL => 'onPostPackageUninstall',
         ];
     }
 
@@ -178,7 +179,8 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
 
     private function extractCaptainhookConfigFromComposerJson(string $projectJson): string
     {
-        return json_decode((string) file_get_contents($projectJson), true, 512, JSON_THROW_ON_ERROR)['extra'][CH::COMPOSER_CONFIG] ?? '';
+        return json_decode((string) file_get_contents($projectJson), true, 512,
+                JSON_THROW_ON_ERROR)['extra'][CH::COMPOSER_CONFIG] ?? '';
     }
 
     /**

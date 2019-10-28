@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a7991406287ace5cdfa41a1cce99075a",
+    "content-hash": "5d046ce1c3ba3a471f8ef500814b956c",
     "packages": [
         {
             "name": "captainhook/captainhook",
