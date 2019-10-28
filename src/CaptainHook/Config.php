@@ -9,6 +9,7 @@ use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
 use OutOfBoundsException;
 use RuntimeException;
 use Webmozart\Assert\Assert;
+use function file_get_contents;
 use function file_put_contents;
 use function is_writable;
 use function json_decode;
@@ -40,7 +41,7 @@ final class Config implements ConfigInterface
 
     public static function fromFile(string $path): self
     {
-        $instance = self::fromArray((array) json_decode($path, true, 512, JSON_THROW_ON_ERROR));
+        $instance = self::fromArray((array) json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR));
         $instance->path = $path;
 
         return $instance;

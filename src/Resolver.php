@@ -174,7 +174,7 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
             return Config::fromFile($fromComposer);
         }
 
-        return Config::fromFile(($this->projectRoot ?: dirname($projectJson)) . DIRECTORY_SEPARATOR . CH::CONFIG);
+        return Config::fromFile(($this->projectRoot ?: realpath(dirname($projectJson))) . DIRECTORY_SEPARATOR . CH::CONFIG);
     }
 
     private function extractCaptainhookConfigFromComposerJson(string $projectJson): string
