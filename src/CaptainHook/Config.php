@@ -125,14 +125,14 @@ final class Config implements ConfigInterface
         return json_encode($this->data(), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
     }
 
-    private function data(): array
+    private function data(): object
     {
         $data = [];
         foreach ($this->hooks as $hook) {
             $data[$hook->name()] = $hook->data();
         }
 
-        return array_merge($data, $this->config);
+        return (object) array_merge($data, $this->config);
     }
 
     public function remove(HookInterface $hook, ActionInterface $action): void

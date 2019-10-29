@@ -93,6 +93,11 @@ final class Config implements ConfigInterface
             throw new RuntimeException(sprintf('Unable to write to %s', $this->path));
         }
 
+        if ($this->empty()) {
+            $this->delete();
+            return true;
+        }
+
         $stored = file_put_contents($path, $this->json()) !== false;
         if ($stored) {
             $this->dirty = false;
@@ -106,9 +111,9 @@ final class Config implements ConfigInterface
         return json_encode($this->data(), JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT);
     }
 
-    private function data(): array
+    private function data(): object
     {
-        return [
+        return (object) [
             'skipped' => (object) $this->skipped,
         ];
     }
@@ -132,5 +137,15 @@ final class Config implements ConfigInterface
         $actions = $this->skipped[$hook->name()] ?? [];
 
         return in_array($action->action(), $actions, true);
+    }
+
+    private function empty(): bool
+    {
+        return empty($this->skipped);
+    }
+
+    private function delete(): void
+    {
+        unlink($this->path);
     }
 }
