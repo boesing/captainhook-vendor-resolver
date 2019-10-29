@@ -17,4 +17,9 @@ final class Options extends ArrayObject
     {
         return $this->getArrayCopy() === $options->getArrayCopy();
     }
+
+    public function data(): array
+    {
+        return $this->getArrayCopy();
+    }
 }

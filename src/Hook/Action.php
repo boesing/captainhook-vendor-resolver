@@ -106,18 +106,23 @@ final class Action implements ActionInterface
         throw new OutOfBoundsException();
     }
 
-    public function data(): array
+    public function data(): object
     {
         $conditions = [];
         foreach ($this->conditions() as $condition) {
             $conditions[] = $condition->data();
         }
 
-        return [
-            'action' => $this->action(),
-            'options' => $this->options,
+        $data = [
+            'action' => $this->action,
             'conditions' => $conditions,
         ];
+
+        if ($this->options->count() > 0) {
+            $data['options'] = $this->options->data();
+        }
+
+        return (object) $data;
     }
 
     /**
