@@ -55,6 +55,11 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
      */
     private $io;
 
+    /**
+     * @var InjectorInterface|null
+     */
+    private $injector;
+
     public function __construct(string $projectRoot = '')
     {
         if (is_string($projectRoot) && !empty($projectRoot) && is_dir($projectRoot)) {
@@ -106,8 +111,7 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
             return;
         }
 
-        $captainhookJson = $this->discoverCaptainhookJson();
-        $injector = new CaptainhookjsonInjector($captainhookJson, $this->discoverResolverConfiguration());
+        $injector = $this->injector();
 
         foreach ($hooks as $hook) {
             try {
@@ -169,6 +173,18 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
         }
 
         return $converted;
+    }
+
+    private function injector(): InjectorInterface
+    {
+        if ($this->injector) {
+            return $this->injector;
+        }
+
+        $captainhookJson = $this->discoverCaptainhookJson();
+        $injector = new CaptainhookjsonInjector($captainhookJson, $this->discoverResolverConfiguration());
+
+        return $injector;
     }
 
     private function discoverCaptainhookJson(): Config
@@ -247,14 +263,11 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
             return;
         }
 
-        $captainhookJson = $this->discoverCaptainhookJson();
-        $resolverConfiguration = $this->discoverResolverConfiguration();
-        $injector = new CaptainhookjsonInjector($captainhookJson, $resolverConfiguration);
+        $injector = $this->injector();
         foreach ($hooks as $hook) {
             $injector->remove($hook);
         }
 
         $injector->store();
-        $resolverConfiguration->remove();
     }
 }

@@ -8,12 +8,11 @@ use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
 use RuntimeException;
 use Webmozart\Assert\Assert;
 use function array_map;
+use function array_search;
 use function file_exists;
 use function file_put_contents;
 use function in_array;
-use function is_dir;
 use function json_encode;
-use function unlink;
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
 
@@ -29,6 +28,11 @@ final class Config implements ConfigInterface
      * @var string
      */
     private $path = '';
+
+    /**
+     * @var bool
+     */
+    private $dirty = false;
 
     /**
      * @param array<string,string[]> $skipped
@@ -78,13 +82,8 @@ final class Config implements ConfigInterface
         $this->skipped[$hook->name()] = array_map(function (ActionInterface $action): string {
             return $action->action();
         }, $actions);
-    }
 
-    public function skipped(HookInterface $hook, ActionInterface $action): bool
-    {
-        $actions = $this->skipped[$hook->name()] ?? [];
-
-        return in_array($action->action(), $actions, true);
+        $this->dirty = true;
     }
 
     public function store(): bool
@@ -94,7 +93,12 @@ final class Config implements ConfigInterface
             throw new RuntimeException(sprintf('Unable to write to %s', $this->path));
         }
 
-        return file_put_contents($path, $this->json()) !== false;
+        $stored = file_put_contents($path, $this->json()) !== false;
+        if ($stored) {
+            $this->dirty = false;
+        }
+
+        return $stored;
     }
 
     private function json(): string
@@ -109,10 +113,24 @@ final class Config implements ConfigInterface
         ];
     }
 
-    public function remove(): bool
+    public function remove(HookInterface $hook, ActionInterface $action): void
     {
-        if (file_exists($this->path)) {
-            unlink($this->path);
+        if (!$this->skipped($hook, $action)) {
+            return;
         }
+
+        $key = array_search($action->action(), $this->skipped[$hook->name()], true);
+        if ($key === false) {
+            return;
+        }
+        unset($this->skipped[$hook->name()][$key]);
+        $this->dirty = true;
+    }
+
+    public function skipped(HookInterface $hook, ActionInterface $action): bool
+    {
+        $actions = $this->skipped[$hook->name()] ?? [];
+
+        return in_array($action->action(), $actions, true);
     }
 }

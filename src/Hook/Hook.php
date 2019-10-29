@@ -24,6 +24,11 @@ final class Hook implements HookInterface
      */
     private $actions = [];
 
+    /**
+     * @var bool
+     */
+    private $dirty = false;
+
     public function __construct(string $name, bool $enabled)
     {
         $this->name = $name;
@@ -62,6 +67,7 @@ final class Hook implements HookInterface
         }
 
         unset($this->actions[$action->action()]);
+        $this->dirty = true;
     }
 
     private function has(string $action): bool
@@ -76,6 +82,7 @@ final class Hook implements HookInterface
         }
 
         $this->actions[$action->action()] = $action;
+        $this->dirty = true;
     }
 
     public function data(): array
@@ -109,5 +116,15 @@ final class Hook implements HookInterface
         $instance->actions = $actions;
 
         return $instance;
+    }
+
+    public function stored(): void
+    {
+        $this->dirty = false;
+    }
+
+    public function dirty(): bool
+    {
+        return $this->dirty;
     }
 }

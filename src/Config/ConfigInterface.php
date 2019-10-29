@@ -18,5 +18,5 @@ interface ConfigInterface
 
     public function store(): bool;
 
-    public function remove(): bool;
+    public function remove(HookInterface $hook, ActionInterface $action): void;
 }

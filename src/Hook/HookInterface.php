@@ -23,4 +23,8 @@ interface HookInterface
     public function actions(): array;
 
     public function data(): array;
+
+    public function dirty(): bool;
+
+    public function stored(): void;
 }

@@ -89,12 +89,32 @@ final class Config implements ConfigInterface
 
     public function store(): bool
     {
+        if (!$this->dirty()) {
+            return true;
+        }
+
         $path = $this->path;
         if ((file_exists($path) && !is_writable($path)) || !is_writable(dirname($path))) {
             throw new RuntimeException(sprintf('Unable to write to %s', $this->path));
         }
 
-        return file_put_contents($path, $this->json()) !== false;
+        $stored =  file_put_contents($path, $this->json()) !== false;
+        if ($stored) {
+            $this->stored();
+        }
+
+        return $stored;
+    }
+
+    private function dirty(): bool
+    {
+        foreach ($this->hooks as $hook) {
+            if ($hook->dirty()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function json(): string
@@ -135,5 +155,12 @@ final class Config implements ConfigInterface
         }
 
         return $hook;
+    }
+
+    private function stored(): void
+    {
+        foreach ($this->hooks as $hook) {
+            $hook->stored();
+        }
     }
 }
