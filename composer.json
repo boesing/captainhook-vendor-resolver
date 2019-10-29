@@ -3,6 +3,10 @@
     "type": "composer-plugin",
     "description": "CaptainHook extension which parses vendor packages after installation to merge projects captainhook.json with hooks provided by vendor packages",
     "license": "BSD-3-Clause",
+    "keywords": [
+        "captainhook",
+        "composer plugin"
+    ],
     "authors": [
         {
             "name": "Maximilian Bösing",
