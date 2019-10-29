@@ -23,7 +23,7 @@ final class Config implements ConfigInterface
     /**
      * @var array<string, string[]>
      */
-    private $skipped;
+    public $skipped = [];
 
     /**
      * @var string
@@ -32,6 +32,10 @@ final class Config implements ConfigInterface
 
     private function __construct(array $skipped)
     {
+        if (empty($skipped)) {
+            return;
+        }
+
         Assert::isMap(
             $skipped,
             'Provided skipped actions must contain a map of hook name and skipped actions for that hook.'
@@ -57,7 +61,7 @@ final class Config implements ConfigInterface
         return $instance;
     }
 
-    private static function fromArray(array $config): self
+    public static function fromArray(array $config): self
     {
         return new self($config['skipped'] ?? []);
     }
