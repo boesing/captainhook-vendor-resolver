@@ -6,8 +6,6 @@ namespace Boesing\CaptainhookVendorResolver\Hook;
 use Boesing\CaptainhookVendorResolver\Hook\Action\Condition;
 use Boesing\CaptainhookVendorResolver\Hook\Action\ConditionInterface;
 use Boesing\CaptainhookVendorResolver\Hook\Action\Options;
-use CaptainHook\App\Config\Action as CaptainHookAction;
-use CaptainHook\App\Config\Condition as CaptainHookCondition;
 use OutOfBoundsException;
 use Webmozart\Assert\Assert;
 use function array_map;
@@ -40,15 +38,6 @@ final class Action implements ActionInterface
         $this->options = $options;
         Assert::allIsInstanceOf($conditions, ConditionInterface::class);
         $this->conditions = $conditions;
-    }
-
-    public static function fromCaptainHook(CaptainHookAction $action): self
-    {
-        $conditions = array_map(function (CaptainHookCondition $condition): ConditionInterface {
-            return new Condition($condition->getExec(), $condition->getArgs());
-        }, $action->getConditions());
-
-        return new self($action->getAction(), new Options($action->getOptions()->getAll()), $conditions);
     }
 
     public static function fromDefinition(array $definition): self
@@ -90,11 +79,6 @@ final class Action implements ActionInterface
         return true;
     }
 
-    public function action(): string
-    {
-        return $this->action;
-    }
-
     public function has(string $exec): bool
     {
         foreach ($this->conditions as $condition) {
@@ -104,14 +88,6 @@ final class Action implements ActionInterface
         }
 
         return false;
-    }
-
-    /**
-     * @return ConditionInterface[]
-     */
-    public function conditions(): array
-    {
-        return $this->conditions;
     }
 
     public function options(): Options
@@ -142,5 +118,18 @@ final class Action implements ActionInterface
             'options' => $this->options,
             'conditions' => $conditions,
         ];
+    }
+
+    /**
+     * @return ConditionInterface[]
+     */
+    public function conditions(): array
+    {
+        return $this->conditions;
+    }
+
+    public function action(): string
+    {
+        return $this->action;
     }
 }

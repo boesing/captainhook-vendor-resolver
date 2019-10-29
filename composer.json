@@ -17,7 +17,8 @@
     },
     "require-dev": {
         "composer/composer": "^1.9",
-        "phpstan/phpstan": "^0.11.19"
+        "phpstan/phpstan": "^0.11.19",
+        "phpunit/phpunit": "^8.4"
     },
     "config": {
         "preferred-install": "dist",
@@ -29,6 +30,11 @@
     "autoload": {
         "psr-4": {
             "Boesing\\CaptainhookVendorResolver\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Boesing\\CaptainhookVendorResolverTests\\": "tests/"
         }
     },
     "minimum-stability": "dev",

@@ -189,7 +189,7 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
     private function inject(CaptainhookjsonInjector $injector, HookInterface $hook): void
     {
         try {
-            $injector->inject($hook, false);
+            $injector->inject($hook);
         } catch (ActionAlreadyExistsException $exception) {
             $overwrite = $this->io->askConfirmation('One or more actions do already exists. Do you want to overwrite them? (Y/n)');
             if (!$overwrite) {

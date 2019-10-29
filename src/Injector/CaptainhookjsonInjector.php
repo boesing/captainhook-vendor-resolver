@@ -23,7 +23,7 @@ final class CaptainhookjsonInjector implements InjectorInterface
     /**
      * @inheritDoc
      */
-    public function inject(HookInterface $hook, bool $overwrite): void
+    public function inject(HookInterface $hook, bool $overwrite = false): void
     {
         if (!$this->config->exists($hook->name())) {
             $this->config->add($hook);
