@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\CaptainHook;
 
+use Boesing\CaptainhookVendorResolver\Hook\ActionInterface;
 use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
 
 interface ConfigInterface
@@ -12,7 +13,7 @@ interface ConfigInterface
 
     public function store(): bool;
 
-    public function remove(HookInterface $hook): void;
+    public function remove(HookInterface $hook, ActionInterface $action): void;
 
     public function add(HookInterface $hook): void;
 

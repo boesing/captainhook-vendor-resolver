@@ -75,7 +75,13 @@ final class CaptainhookjsonInjector implements InjectorInterface
             return;
         }
 
-        $this->captainhook->remove($hook);
+        $actionsToRemove = array_filter($hook->actions(), function (ActionInterface $action) use ($hook): bool {
+            return !$this->resolver->skipped($hook, $action);
+        });
+
+        foreach ($actionsToRemove as $action) {
+            $this->captainhook->remove($hook, $action);
+        }
     }
 
     /**

@@ -114,6 +114,7 @@ final class Hook implements HookInterface
         Assert::allIsInstanceOf($actions, ActionInterface::class);
         $instance = clone $this;
         $instance->actions = $actions;
+        $instance->dirty = true;
 
         return $instance;
     }

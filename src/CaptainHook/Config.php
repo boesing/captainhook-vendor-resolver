@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Boesing\CaptainhookVendorResolver\CaptainHook;
 
 use Boesing\CaptainhookVendorResolver\Exception\HookAlreadyExistsException;
+use Boesing\CaptainhookVendorResolver\Hook\ActionInterface;
 use Boesing\CaptainhookVendorResolver\Hook\Hook;
 use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
 use CaptainHook\App\Hooks;
@@ -11,7 +12,9 @@ use OutOfBoundsException;
 use RuntimeException;
 use Webmozart\Assert\Assert;
 use function array_diff_key;
+use function array_filter;
 use function array_intersect_key;
+use function array_values;
 use function dirname;
 use function file_exists;
 use function file_get_contents;
@@ -132,18 +135,20 @@ final class Config implements ConfigInterface
         return array_merge($data, $this->config);
     }
 
-    public function remove(HookInterface $hook): void
+    public function remove(HookInterface $hook, ActionInterface $action): void
     {
         if (!$this->exists($hook->name())) {
             return;
         }
 
         $stored = $this->get($hook->name());
-        foreach ($hook->actions() as $action) {
-            $stored->remove($action);
-        }
+        unset($this->hooks[$hook->name()]);
 
-        return;
+        $actions = array_filter($stored->actions(), function (ActionInterface $stored) use ($action): bool {
+            return $action->action() !== $stored->action();
+        });
+
+        $this->hooks[$hook->name()] = $stored->replace(array_values($actions));
     }
 
     public function get(string $name): HookInterface
