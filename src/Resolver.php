@@ -185,7 +185,7 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
     private function extractCaptainhookConfigFromComposerJson(string $projectJson): string
     {
         $decoded = (array) json_decode(
-            (string) file_get_contents(realpath($projectJson)),
+            (string) file_get_contents((string) realpath($projectJson)),
             true,
             512,
             JSON_THROW_ON_ERROR

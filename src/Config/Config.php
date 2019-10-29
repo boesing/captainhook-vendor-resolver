@@ -30,6 +30,9 @@ final class Config implements ConfigInterface
      */
     private $path = '';
 
+    /**
+     * @param array<string,string[]> $skipped
+     */
     private function __construct(array $skipped)
     {
         if (empty($skipped)) {
@@ -86,11 +89,12 @@ final class Config implements ConfigInterface
 
     public function store(): bool
     {
-        if (!is_writable($this->path) || is_dir($this->path)) {
+        $path = $this->path;
+        if ((file_exists($path) && !is_writable($path)) || !is_writable(dirname($path))) {
             throw new RuntimeException(sprintf('Unable to write to %s', $this->path));
         }
 
-        return file_put_contents($this->path, $this->json()) !== false;
+        return file_put_contents($path, $this->json()) !== false;
     }
 
     private function json(): string
