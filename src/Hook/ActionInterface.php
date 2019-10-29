@@ -23,4 +23,6 @@ interface ActionInterface
     public function condition(string $exec): ConditionInterface;
 
     public function data(): array;
+
+    public function equals(ActionInterface $action): bool;
 }

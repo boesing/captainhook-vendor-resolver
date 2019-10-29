@@ -48,4 +48,9 @@ final class Condition implements ConditionInterface
     {
         return $this->exec;
     }
+
+    public function equals(ConditionInterface $condition): bool
+    {
+        return $this->data() === $condition->data();
+    }
 }

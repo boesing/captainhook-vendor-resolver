@@ -12,4 +12,9 @@ final class Options extends ArrayObject
     {
         parent::__construct($options);
     }
+
+    public function equals(Options $options): bool
+    {
+        return $this->getArrayCopy() === $options->getArrayCopy();
+    }
 }

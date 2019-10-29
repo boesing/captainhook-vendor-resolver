@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Boesing\CaptainhookVendorResolver\Hook;
 
 use Boesing\CaptainhookVendorResolver\Exception\ActionAlreadyExistsException;
+use OutOfBoundsException;
 use Webmozart\Assert\Assert;
 
 final class Hook implements HookInterface
@@ -87,6 +88,11 @@ final class Hook implements HookInterface
     public function add(ActionInterface $action): void
     {
         if ($this->has($action->action())) {
+            $stored = $this->get($action->action());
+            if ($stored->equals($action)) {
+                return;
+            }
+
             throw ActionAlreadyExistsException::create($action->action());
         }
 
@@ -136,5 +142,14 @@ final class Hook implements HookInterface
     public function dirty(): bool
     {
         return $this->dirty;
+    }
+
+    private function get(string $action): ActionInterface
+    {
+        if (!$this->has($action)) {
+            throw new OutOfBoundsException();
+        }
+        
+        return $this->actions[$action];
     }
 }

@@ -51,6 +51,34 @@ final class Action implements ActionInterface
         return new self($action, $options, $conditions);
     }
 
+    public function equals(ActionInterface $action): bool
+    {
+        if ($this->action !== $action->action()) {
+            return false;
+        }
+
+        if (!$this->options->equals($action->options())) {
+            return false;
+        }
+
+        if (count($this->conditions) !== count($action->conditions())) {
+            return false;
+        }
+
+        foreach ($this->conditions as $condition) {
+            if (!$action->has($condition->exec())) {
+                return false;
+            }
+
+            $conditionFromAction = $action->condition($condition->exec());
+            if (!$conditionFromAction->equals($condition)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function has(string $exec): bool
     {
         foreach ($this->conditions as $condition) {
