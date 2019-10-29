@@ -36,15 +36,6 @@ final class Condition implements ConditionInterface
         return $this->arguments;
     }
 
-    public function equals(ConditionInterface $condition): bool
-    {
-        if ($this->exec !== $condition->exec()) {
-            return false;
-        }
-
-        return $this->arguments === $condition->arguments();
-    }
-
     public function data(): array
     {
         return [

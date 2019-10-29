@@ -9,8 +9,6 @@ use Boesing\CaptainhookVendorResolver\Hook\Action\Options;
 interface ActionInterface
 {
 
-    public function equals(ActionInterface $action): bool;
-
     public function action(): string;
 
     public function has(string $exec): bool;

@@ -10,7 +10,5 @@ interface ConditionInterface
 
     public function arguments(): array;
 
-    public function equals(ConditionInterface $condition): bool;
-
     public function data(): array;
 }
