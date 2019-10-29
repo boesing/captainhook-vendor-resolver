@@ -51,6 +51,10 @@ final class Hook implements HookInterface
 
     private function setActions(array $actions): void
     {
+        if (empty($actions)) {
+            return;
+        }
+
         Assert::allIsInstanceOf($actions, ActionInterface::class);
         $mapped = (array) array_combine(array_map(function (ActionInterface $action): string {
             return $action->action();
