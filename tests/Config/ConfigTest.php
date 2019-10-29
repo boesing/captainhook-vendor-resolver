@@ -14,4 +14,10 @@ final class ConfigTest extends TestCase
         $config = Config::fromArray([]);
         $this->assertEmpty($config->skipped);
     }
+
+    public function testCanInstantiateWithoutSkippedHooks()
+    {
+        $config = Config::fromArray(['skipped' => []]);
+        $this->assertEmpty($config->skipped);
+    }
 }

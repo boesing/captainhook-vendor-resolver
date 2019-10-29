@@ -128,10 +128,10 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
 
     private function getExtraMetadata(array $extra): array
     {
-        $metadata = $extra[self::HOOKS_IDENTIFIER] ?? [];
-        Assert::isMap($metadata);
+        $metadata = $extra[self::HOOKS_IDENTIFIER] ?? null;
+        Assert::nullOrIsMap($metadata);
 
-        return $metadata;
+        return $metadata ?? [];
     }
 
     /**
