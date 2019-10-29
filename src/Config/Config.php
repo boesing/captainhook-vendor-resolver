@@ -146,6 +146,10 @@ final class Config implements ConfigInterface
 
     private function delete(): void
     {
+        if (!file_exists($this->path)) {
+            return;
+        }
+
         unlink($this->path);
     }
 }
