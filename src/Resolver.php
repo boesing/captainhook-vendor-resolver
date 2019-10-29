@@ -179,13 +179,29 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
             return Config::fromFile($fromComposer);
         }
 
-        return Config::fromFile(($this->projectRoot ?: realpath(dirname($projectJson))) . DIRECTORY_SEPARATOR . CH::CONFIG);
+        return Config::fromFile($this->path(CH::CONFIG));
     }
 
     private function extractCaptainhookConfigFromComposerJson(string $projectJson): string
     {
-        return json_decode((string) file_get_contents($projectJson), true, 512,
-                JSON_THROW_ON_ERROR)['extra'][CH::COMPOSER_CONFIG] ?? '';
+        $decoded = (array) json_decode(
+            (string) file_get_contents(realpath($projectJson)),
+            true,
+            512,
+            JSON_THROW_ON_ERROR
+        );
+
+        return $decoded['extra'][CH::COMPOSER_CONFIG] ?? '';
+    }
+
+    private function path(string $filename): string
+    {
+        return realpath(($this->projectRoot ?: dirname(Factory::getComposerFile()))) . DIRECTORY_SEPARATOR . $filename;
+    }
+
+    private function discoverResolverConfiguration(): ConfigInterface
+    {
+        return ResolverConfig::fromFile($this->path(self::RESOLVER_CONFIGURATION));
     }
 
     /**
@@ -196,9 +212,11 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
         try {
             $injector->inject($hook);
         } catch (ActionsAlreadyExistsException $exception) {
-            $update = $this->io->askConfirmation(sprintf('%s Do you want to update these? (Y/n) ', $exception->getMessage()));
+            $update = $this->io->askConfirmation(sprintf('%s Do you want to update these? (Y/n) ',
+                $exception->getMessage()));
             if (!$update) {
                 $injector->skipped($hook, $exception->actions());
+
                 return;
             }
 
@@ -238,13 +256,5 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
 
         $injector->store();
         $resolverConfiguration->remove();
-    }
-
-    private function discoverResolverConfiguration(): ConfigInterface
-    {
-        $projectJson = Factory::getComposerFile();
-        return ResolverConfig::fromFile(
-            ($this->projectRoot ?: dirname($projectJson)) . DIRECTORY_SEPARATOR . self::RESOLVER_CONFIGURATION
-        );
     }
 }
