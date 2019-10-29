@@ -52,7 +52,12 @@ final class Hook implements HookInterface
     private function setActions(array $actions): void
     {
         Assert::allIsInstanceOf($actions, ActionInterface::class);
-        $this->actions = $actions;
+        $mapped = (array) array_combine(array_map(function (ActionInterface $action): string {
+            return $action->action();
+        }, $actions), array_values($actions));
+
+        Assert::isMap($mapped);
+        $this->actions = $mapped;
     }
 
     public function name(): string
@@ -113,7 +118,7 @@ final class Hook implements HookInterface
     {
         Assert::allIsInstanceOf($actions, ActionInterface::class);
         $instance = clone $this;
-        $instance->actions = $actions;
+        $instance->setActions($actions);
         $instance->dirty = true;
 
         return $instance;
