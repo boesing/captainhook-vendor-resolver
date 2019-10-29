@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Boesing\CaptainhookVendorResolver\Hook;
 
 use Boesing\CaptainhookVendorResolver\Exception\ActionAlreadyExistsException;
-use Boesing\CaptainhookVendorResolver\Exception\IncompatibleHookException;
 use Webmozart\Assert\Assert;
 
 final class Hook implements HookInterface
@@ -56,21 +55,6 @@ final class Hook implements HookInterface
         return $this->name;
     }
 
-    public function merge(HookInterface $hook, bool $overwrite = false): void
-    {
-        if ($hook->name() !== $this->name()) {
-            throw IncompatibleHookException::fromNotMachingHookName($this->name(), $hook->name());
-        }
-
-        foreach ($hook->actions() as $action) {
-            if ($overwrite === true) {
-                $this->remove($action);
-            }
-
-            $this->add($action);
-        }
-    }
-
     public function remove(ActionInterface $action): void
     {
         if (!$this->has($action->action())) {
@@ -94,14 +78,6 @@ final class Hook implements HookInterface
         $this->actions[$action->action()] = $action;
     }
 
-    /**
-     * @return ActionInterface[]
-     */
-    public function actions(): array
-    {
-        return $this->actions;
-    }
-
     public function data(): array
     {
         $actions = [];
@@ -113,5 +89,25 @@ final class Hook implements HookInterface
             'enabled' => $this->enabled,
             'actions' => $actions,
         ];
+    }
+
+    /**
+     * @return ActionInterface[]
+     */
+    public function actions(): array
+    {
+        return $this->actions;
+    }
+
+    /**
+     * @param ActionInterface[] $actions
+     */
+    public function replace(array $actions): HookInterface
+    {
+        Assert::allIsInstanceOf($actions, ActionInterface::class);
+        $instance = clone $this;
+        $instance->actions = $actions;
+
+        return $instance;
     }
 }

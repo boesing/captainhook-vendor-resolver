@@ -10,7 +10,7 @@ final class ActionAlreadyExistsException extends RuntimeException implements Exc
 
     private function __construct(string $action)
     {
-        parent::__construct(sprintf('Action %s already exists.', $action));
+        parent::__construct(sprintf('Action %s already exists', $action));
     }
 
     public static function create(string $action): self

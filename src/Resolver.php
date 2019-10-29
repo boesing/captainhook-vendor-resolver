@@ -4,13 +4,16 @@ declare(strict_types=1);
 namespace Boesing\CaptainhookVendorResolver;
 
 use Boesing\CaptainhookVendorResolver\CaptainHook\Config;
-use Boesing\CaptainhookVendorResolver\Exception\ActionAlreadyExistsException;
+use Boesing\CaptainhookVendorResolver\Config\Config as ResolverConfig;
+use Boesing\CaptainhookVendorResolver\Config\ConfigInterface;
+use Boesing\CaptainhookVendorResolver\Exception\ActionsAlreadyExistsException;
 use Boesing\CaptainhookVendorResolver\Exception\ExceptionInterface;
 use Boesing\CaptainhookVendorResolver\Hook\Action\Condition;
 use Boesing\CaptainhookVendorResolver\Hook\Action\ConditionInterface;
 use Boesing\CaptainhookVendorResolver\Hook\Action\Options;
 use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
 use Boesing\CaptainhookVendorResolver\Injector\CaptainhookjsonInjector;
+use Boesing\CaptainhookVendorResolver\Injector\InjectorInterface;
 use CaptainHook\App\CH;
 use CaptainHook\App\Hooks;
 use Composer\Composer;
@@ -35,6 +38,7 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
 {
 
     private const HOOKS_IDENTIFIER = 'captainhook-hooks';
+    private const RESOLVER_CONFIGURATION = 'captainhook-vendor-resolver.json';
 
     /**
      * @var string
@@ -103,7 +107,8 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
         }
 
         $captainhookJson = $this->discoverCaptainhookJson();
-        $injector = new CaptainhookjsonInjector($captainhookJson);
+        $injector = new CaptainhookjsonInjector($captainhookJson, $this->discoverResolverConfiguration());
+
         foreach ($hooks as $hook) {
             try {
                 $this->inject($injector, $hook);
@@ -114,7 +119,7 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
             }
         }
 
-        $captainhookJson->store();
+        $injector->store();
     }
 
     private function getExtraMetadata(array $extra): array
@@ -186,17 +191,18 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
     /**
      * @throws ExceptionInterface
      */
-    private function inject(CaptainhookjsonInjector $injector, HookInterface $hook): void
+    private function inject(InjectorInterface $injector, HookInterface $hook): void
     {
         try {
             $injector->inject($hook);
-        } catch (ActionAlreadyExistsException $exception) {
-            $overwrite = $this->io->askConfirmation('One or more actions do already exists. Do you want to overwrite them? (Y/n)');
-            if (!$overwrite) {
+        } catch (ActionsAlreadyExistsException $exception) {
+            $update = $this->io->askConfirmation(sprintf('%s Do you want to update these? (Y/n) ', $exception->getMessage()));
+            if (!$update) {
+                $injector->skipped($hook, $exception->actions());
                 return;
             }
 
-            $injector->inject($hook, true);
+            $injector->inject($hook->replace($exception->actions()), $update);
         }
     }
 
@@ -224,11 +230,21 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
         }
 
         $captainhookJson = $this->discoverCaptainhookJson();
-        $injector = new CaptainhookjsonInjector($captainhookJson);
+        $resolverConfiguration = $this->discoverResolverConfiguration();
+        $injector = new CaptainhookjsonInjector($captainhookJson, $resolverConfiguration);
         foreach ($hooks as $hook) {
             $injector->remove($hook);
         }
 
-        $captainhookJson->store();
+        $injector->store();
+        $resolverConfiguration->remove();
+    }
+
+    private function discoverResolverConfiguration(): ConfigInterface
+    {
+        $projectJson = Factory::getComposerFile();
+        return ResolverConfig::fromFile(
+            ($this->projectRoot ?: dirname($projectJson)) . DIRECTORY_SEPARATOR . self::RESOLVER_CONFIGURATION
+        );
     }
 }

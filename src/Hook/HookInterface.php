@@ -13,11 +13,14 @@ interface HookInterface
     public function remove(ActionInterface $hook): void;
 
     /**
+     * @param ActionInterface[] $actions
+     */
+    public function replace(array $actions): self;
+
+    /**
      * @return ActionInterface[]
      */
     public function actions(): array;
-
-    public function merge(HookInterface $hook, bool $overwrite): void;
 
     public function data(): array;
 }

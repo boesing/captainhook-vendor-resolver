@@ -87,11 +87,8 @@ final class Config implements ConfigInterface
 
     public function store(): bool
     {
-        if (!is_writable($this->path)) {
-            throw new RuntimeException(sprintf(
-                'Unable to write to %s',
-                $this->path
-            ));
+        if (!is_writable($this->path) || is_dir($this->path)) {
+            throw new RuntimeException(sprintf('Unable to write to %s', $this->path));
         }
 
         return file_put_contents($this->path, $this->json()) !== false;
@@ -122,6 +119,8 @@ final class Config implements ConfigInterface
         foreach ($hook->actions() as $action) {
             $stored->remove($action);
         }
+
+        return;
     }
 
     public function get(string $name): HookInterface
