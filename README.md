@@ -118,7 +118,7 @@ Current version of the vendor package...
     "pre-push": {
         "actions": [
             {
-                "exec": "echo 'hey there, no security implication in v1.0.0'"
+                "exec": "echo hey there"
             }
         ]       
     }
