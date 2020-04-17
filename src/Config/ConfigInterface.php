@@ -19,4 +19,6 @@ interface ConfigInterface
     public function store(): bool;
 
     public function remove(HookInterface $hook, ActionInterface $action): void;
+
+    public function captainhookLocation(): string;
 }

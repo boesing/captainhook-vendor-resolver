@@ -5,6 +5,7 @@ namespace Boesing\CaptainhookVendorResolver\Config;
 
 use Boesing\CaptainhookVendorResolver\Hook\ActionInterface;
 use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
+use CaptainHook\App\CH;
 use RuntimeException;
 use Webmozart\Assert\Assert;
 use function array_map;
@@ -35,23 +36,19 @@ final class Config implements ConfigInterface
     private $dirty = false;
 
     /**
+     * @var string
+     */
+    private $captainhookLocation = CH::CONFIG;
+
+    /**
      * @param array<string,string[]> $skipped
      */
-    private function __construct(array $skipped)
+    private function __construct(string $captainhookLocation, array $skipped)
     {
-        if (empty($skipped)) {
-            return;
+        $this->setSkipped($skipped);
+        if ($captainhookLocation) {
+            $this->captainhookLocation = $captainhookLocation;
         }
-
-        Assert::isMap(
-            $skipped,
-            'Provided skipped actions must contain a map of hook name and skipped actions for that hook.'
-        );
-        foreach ($skipped as $actions) {
-            Assert::allStringNotEmpty($actions, 'Provided actions must contain string (action name).');
-        }
-
-        $this->skipped = $skipped;
     }
 
     public static function fromFile(string $path): self
@@ -70,7 +67,7 @@ final class Config implements ConfigInterface
 
     public static function fromArray(array $config): self
     {
-        return new self($config['skipped'] ?? []);
+        return new self($config['captainhook'] ?? '', $config['skipped'] ?? []);
     }
 
     /**
@@ -115,6 +112,7 @@ final class Config implements ConfigInterface
     {
         return (object) [
             'skipped' => (object) $this->skipped,
+            'captainhook' => $this->captainhookLocation,
         ];
     }
 
@@ -151,5 +149,30 @@ final class Config implements ConfigInterface
         }
 
         unlink($this->path);
+    }
+
+    /**
+     * @param array<string,string[]> $skipped
+     */
+    private function setSkipped(array $skipped): void
+    {
+        if (empty($skipped)) {
+            return;
+        }
+
+        Assert::isMap(
+            $skipped,
+            'Provided skipped actions must contain a map of hook name and skipped actions for that hook.'
+        );
+        foreach ($skipped as $actions) {
+            Assert::allStringNotEmpty($actions, 'Provided actions must contain string (action name).');
+        }
+
+        $this->skipped = $skipped;
+    }
+
+    public function captainhookLocation(): string
+    {
+        return $this->captainhookLocation;
     }
 }

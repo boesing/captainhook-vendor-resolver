@@ -8,6 +8,7 @@ use Boesing\CaptainhookVendorResolver\Config\Config as ResolverConfig;
 use Boesing\CaptainhookVendorResolver\Config\ConfigInterface;
 use Boesing\CaptainhookVendorResolver\Exception\ActionsAlreadyExistsException;
 use Boesing\CaptainhookVendorResolver\Exception\ExceptionInterface;
+use Boesing\CaptainhookVendorResolver\Exception\InvalidConfigurationException;
 use Boesing\CaptainhookVendorResolver\Hook\Action\Condition;
 use Boesing\CaptainhookVendorResolver\Hook\Action\ConditionInterface;
 use Boesing\CaptainhookVendorResolver\Hook\Action\Options;
@@ -29,10 +30,8 @@ use Composer\Plugin\PluginInterface;
 use Webmozart\Assert\Assert;
 use function array_intersect_key;
 use function dirname;
-use function file_get_contents;
-use function json_decode;
+use function strlen;
 use const DIRECTORY_SEPARATOR;
-use const JSON_THROW_ON_ERROR;
 
 final class Resolver implements EventSubscriberInterface, PluginInterface
 {
@@ -181,38 +180,30 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
             return $this->injector;
         }
 
-        $captainhookJson = $this->discoverCaptainhookJson();
-        $injector = new CaptainhookjsonInjector($captainhookJson, $this->discoverResolverConfiguration());
+        $resolverConfiguration = $this->discoverResolverConfiguration();
+        $captainhookJson = $this->discoverCaptainhookJson($resolverConfiguration);
+        $injector = new CaptainhookjsonInjector($captainhookJson, $resolverConfiguration);
 
         return $injector;
     }
 
-    private function discoverCaptainhookJson(): Config
+    private function discoverCaptainhookJson(ConfigInterface $resolverConfiguration): Config
     {
-        $projectJson = Factory::getComposerFile();
-        $fromComposer = $this->extractCaptainhookConfigFromComposerJson($projectJson);
-        if ($fromComposer) {
-            return Config::fromFile($fromComposer);
-        }
-
-        return Config::fromFile($this->path(CH::CONFIG));
-    }
-
-    private function extractCaptainhookConfigFromComposerJson(string $projectJson): string
-    {
-        $decoded = (array) json_decode(
-            (string) file_get_contents((string) realpath($projectJson)),
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
-
-        return $decoded['extra'][CH::COMPOSER_CONFIG] ?? '';
+        return Config::fromFile($this->path($resolverConfiguration->captainhookLocation()));
     }
 
     private function path(string $filename): string
     {
-        return realpath(($this->projectRoot ?: dirname(Factory::getComposerFile()))) . DIRECTORY_SEPARATOR . $filename;
+        if (strlen($filename) === 0) {
+            throw InvalidConfigurationException::fromInvalidPath($filename);
+        }
+
+        // If provided filename is absolute, use the absolute path
+        if ($filename[0] === '/') {
+            return (string) realpath($filename);
+        }
+
+        return ((string) realpath(($this->projectRoot ?: dirname(Factory::getComposerFile())))) . DIRECTORY_SEPARATOR . $filename;
     }
 
     private function discoverResolverConfiguration(): ConfigInterface

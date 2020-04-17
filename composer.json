@@ -16,7 +16,7 @@
     "require": {
         "php": "^7.3",
         "composer-plugin-api": "^1.1",
-        "captainhook/captainhook": "^4.5",
+        "captainhook/captainhook": "^5.0",
         "webmozart/assert": "^1.5"
     },
     "require-dev": {
