@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Changed
 
-- Nothing.
+- [#2](https://github.com/boesing/captainhook-vendor-resolver/pull/2) Added compatibility for captainhook v5
 
 ### Deprecated
 
