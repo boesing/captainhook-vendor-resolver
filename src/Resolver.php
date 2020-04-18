@@ -15,7 +15,6 @@ use Boesing\CaptainhookVendorResolver\Hook\Action\Options;
 use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
 use Boesing\CaptainhookVendorResolver\Injector\CaptainhookjsonInjector;
 use Boesing\CaptainhookVendorResolver\Injector\InjectorInterface;
-use CaptainHook\App\CH;
 use CaptainHook\App\Hooks;
 use Composer\Composer;
 use Composer\DependencyResolver\Operation\InstallOperation;
@@ -182,14 +181,18 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
 
         $resolverConfiguration = $this->discoverResolverConfiguration();
         $captainhookJson = $this->discoverCaptainhookJson($resolverConfiguration);
-        $injector = new CaptainhookjsonInjector($captainhookJson, $resolverConfiguration);
+        $injector = new CaptainhookjsonInjector(
+            $this->io,
+            $captainhookJson,
+            $resolverConfiguration
+        );
 
-        return $injector;
+        return $this->injector = $injector;
     }
 
-    private function discoverCaptainhookJson(ConfigInterface $resolverConfiguration): Config
+    private function discoverResolverConfiguration(): ConfigInterface
     {
-        return Config::fromFile($this->path($resolverConfiguration->captainhookLocation()));
+        return ResolverConfig::fromFile($this->path(self::RESOLVER_CONFIGURATION));
     }
 
     private function path(string $filename): string
@@ -206,9 +209,9 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
         return ((string) realpath(($this->projectRoot ?: dirname(Factory::getComposerFile())))) . DIRECTORY_SEPARATOR . $filename;
     }
 
-    private function discoverResolverConfiguration(): ConfigInterface
+    private function discoverCaptainhookJson(ConfigInterface $resolverConfiguration): Config
     {
-        return ResolverConfig::fromFile($this->path(self::RESOLVER_CONFIGURATION));
+        return Config::fromFile($this->path($resolverConfiguration->captainhookLocation()));
     }
 
     /**
