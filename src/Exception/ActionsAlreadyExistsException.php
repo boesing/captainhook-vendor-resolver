@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\Exception;
@@ -6,14 +7,14 @@ namespace Boesing\CaptainhookVendorResolver\Exception;
 use Boesing\CaptainhookVendorResolver\Hook\ActionInterface;
 use RuntimeException;
 use Webmozart\Assert\Assert;
+
+use function array_map;
 use function implode;
+use function sprintf;
 
 final class ActionsAlreadyExistsException extends RuntimeException implements ExceptionInterface
 {
-
-    /**
-     * @var ActionInterface[]
-     */
+    /** @var ActionInterface[] */
     private $actions;
 
     /**

@@ -1,8 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\Injector;
-
 
 use Boesing\CaptainhookVendorResolver\CaptainHook\ConfigInterface;
 use Boesing\CaptainhookVendorResolver\Config\ConfigInterface as ResolverConfigInterface;
@@ -11,24 +11,19 @@ use Boesing\CaptainhookVendorResolver\Exception\ActionsAlreadyExistsException;
 use Boesing\CaptainhookVendorResolver\Hook\ActionInterface;
 use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
 use Composer\IO\IOInterface;
+
 use function array_filter;
+use function sprintf;
 
 final class CaptainhookjsonInjector implements InjectorInterface
 {
-
-    /**
-     * @var ConfigInterface
-     */
+    /** @var ConfigInterface */
     private $captainhook;
 
-    /**
-     * @var ResolverConfigInterface
-     */
+    /** @var ResolverConfigInterface */
     private $resolver;
 
-    /**
-     * @var IOInterface
-     */
+    /** @var IOInterface */
     private $io;
 
     public function __construct(
@@ -36,9 +31,9 @@ final class CaptainhookjsonInjector implements InjectorInterface
         ConfigInterface $captainhook,
         ResolverConfigInterface $resolver
     ) {
-        $this->io = $io;
+        $this->io          = $io;
         $this->captainhook = $captainhook;
-        $this->resolver = $resolver;
+        $this->resolver    = $resolver;
     }
 
     /**
@@ -46,7 +41,7 @@ final class CaptainhookjsonInjector implements InjectorInterface
      */
     public function inject(HookInterface $hook, bool $update = false): void
     {
-        if (!$this->captainhook->exists($hook->name())) {
+        if (! $this->captainhook->exists($hook->name())) {
             $this->captainhook->add($hook);
 
             return;
@@ -57,7 +52,7 @@ final class CaptainhookjsonInjector implements InjectorInterface
         $skipped = [];
 
         $actionsToAdd = array_filter($hook->actions(), function (ActionInterface $action) use ($hook): bool {
-            return !$this->resolver->skipped($hook, $action);
+            return ! $this->resolver->skipped($hook, $action);
         });
 
         foreach ($actionsToAdd as $action) {
@@ -70,14 +65,14 @@ final class CaptainhookjsonInjector implements InjectorInterface
                     '<info>%s action %s to hook %s</info>',
                     $update ? 'Updated ' : 'Added ',
                     $action->action(),
-                    $hook->name(),
+                    $hook->name()
                 ));
             } catch (ActionAlreadyExistsException $exception) {
                 $skipped[] = $action;
             }
         }
 
-        if (!empty($skipped)) {
+        if (! empty($skipped)) {
             throw ActionsAlreadyExistsException::create($hook->name(), $skipped);
         }
     }
@@ -87,12 +82,12 @@ final class CaptainhookjsonInjector implements InjectorInterface
      */
     public function remove(HookInterface $hook): void
     {
-        if (!$this->captainhook->exists($hook->name())) {
+        if (! $this->captainhook->exists($hook->name())) {
             return;
         }
 
         $actionsToRemove = array_filter($hook->actions(), function (ActionInterface $action) use ($hook): bool {
-            return !$this->resolver->skipped($hook, $action);
+            return ! $this->resolver->skipped($hook, $action);
         });
 
         foreach ($actionsToRemove as $action) {

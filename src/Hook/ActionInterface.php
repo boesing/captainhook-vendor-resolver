@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\Hook;
@@ -8,7 +9,6 @@ use Boesing\CaptainhookVendorResolver\Hook\Action\Options;
 
 interface ActionInterface
 {
-
     public function action(): string;
 
     public function has(string $exec): bool;
@@ -24,5 +24,5 @@ interface ActionInterface
 
     public function data(): object;
 
-    public function equals(ActionInterface $action): bool;
+    public function equals(self $action): bool;
 }

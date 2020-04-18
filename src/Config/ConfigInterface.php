@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\Config;
@@ -8,7 +9,6 @@ use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
 
 interface ConfigInterface
 {
-
     /**
      * @param ActionInterface[] $actions
      */

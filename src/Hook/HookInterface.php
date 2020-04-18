@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\Hook;
 
 interface HookInterface
 {
-
     public function name(): string;
 
     public function add(ActionInterface $action): void;

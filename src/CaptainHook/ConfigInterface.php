@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\CaptainHook;
@@ -8,7 +9,6 @@ use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
 
 interface ConfigInterface
 {
-
     public function exists(string $hook): bool;
 
     public function store(): bool;
