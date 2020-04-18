@@ -10,6 +10,7 @@ use Boesing\CaptainhookVendorResolver\Exception\ActionAlreadyExistsException;
 use Boesing\CaptainhookVendorResolver\Exception\ActionsAlreadyExistsException;
 use Boesing\CaptainhookVendorResolver\Hook\ActionInterface;
 use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
+use Composer\IO\IOInterface;
 use function array_filter;
 
 final class CaptainhookjsonInjector implements InjectorInterface
@@ -25,8 +26,17 @@ final class CaptainhookjsonInjector implements InjectorInterface
      */
     private $resolver;
 
-    public function __construct(ConfigInterface $captainhook, ResolverConfigInterface $resolver)
-    {
+    /**
+     * @var IOInterface
+     */
+    private $io;
+
+    public function __construct(
+        IOInterface $io,
+        ConfigInterface $captainhook,
+        ResolverConfigInterface $resolver
+    ) {
+        $this->io = $io;
         $this->captainhook = $captainhook;
         $this->resolver = $resolver;
     }
@@ -56,6 +66,12 @@ final class CaptainhookjsonInjector implements InjectorInterface
             }
             try {
                 $registered->add($action);
+                $this->io->write(sprintf(
+                    '<info>%s action %s to hook %s</info>',
+                    $update ? 'Updated ' : 'Added ',
+                    $action->action(),
+                    $hook->name(),
+                ));
             } catch (ActionAlreadyExistsException $exception) {
                 $skipped[] = $action;
             }
