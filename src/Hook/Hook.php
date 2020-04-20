@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\Hook;
@@ -7,38 +8,33 @@ use Boesing\CaptainhookVendorResolver\Exception\ActionAlreadyExistsException;
 use OutOfBoundsException;
 use Webmozart\Assert\Assert;
 
+use function array_combine;
+use function array_map;
+use function array_values;
+
 final class Hook implements HookInterface
 {
-
-    /**
-     * @var string
-     */
+    /** @var string */
     private $name;
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $enabled;
 
-    /**
-     * @var ActionInterface[]
-     */
+    /** @var ActionInterface[] */
     private $actions = [];
 
-    /**
-     * @var bool
-     */
+    /** @var bool */
     private $dirty = false;
 
     public function __construct(string $name, bool $enabled)
     {
-        $this->name = $name;
+        $this->name    = $name;
         $this->enabled = $enabled;
     }
 
     public static function fromDefinition(string $name, array $hook): self
     {
-        $enabled = $hook['enabled'] ?? true;
+        $enabled  = $hook['enabled'] ?? true;
         $instance = new self($name, $enabled);
 
         $actions = array_map(function (array $action): ActionInterface {
@@ -72,7 +68,7 @@ final class Hook implements HookInterface
 
     public function remove(ActionInterface $action): void
     {
-        if (!$this->has($action->action())) {
+        if (! $this->has($action->action())) {
             return;
         }
 
@@ -97,7 +93,7 @@ final class Hook implements HookInterface
         }
 
         $this->actions[$action->action()] = $action;
-        $this->dirty = true;
+        $this->dirty                      = true;
     }
 
     public function data(): array
@@ -146,7 +142,7 @@ final class Hook implements HookInterface
 
     private function get(string $action): ActionInterface
     {
-        if (!$this->has($action)) {
+        if (! $this->has($action)) {
             throw new OutOfBoundsException();
         }
         

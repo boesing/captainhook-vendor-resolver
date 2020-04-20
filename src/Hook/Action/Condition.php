@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\Hook\Action;
@@ -7,15 +8,10 @@ use Webmozart\Assert\Assert;
 
 final class Condition implements ConditionInterface
 {
-
-    /**
-     * @var string
-     */
+    /** @var string */
     private $exec;
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $arguments;
 
     public function __construct(string $exec, array $arguments)

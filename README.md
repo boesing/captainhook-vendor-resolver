@@ -3,6 +3,14 @@
 This composer-plugin introduces a package scan for captainhook/captainhook hooks.
 So on every `composer require`, `composer install` or `composer remove` call, this plugin checks the `composer.json` of the installed/uninstalled package for hooks to add/remove from the `captainhook.json`.
 
+**NOTE: As of captainhook v5.0, you can specify a dedicated `captainhook.json` via `--configuration`. If you are using this parameter, please provide the custom `captainhook.json` path via `captainhook-vendor-resolver.json` configuration next to your `composer.json`.**
+
+```json
+{
+    "captainhook": "relativeOrAbsolutePath/to/your/captainhook.json"
+}
+```
+
 
 ## Where is the difference to the already existing feature "includes"
 

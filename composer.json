@@ -16,11 +16,13 @@
     "require": {
         "php": "^7.3",
         "composer-plugin-api": "^1.1",
-        "captainhook/captainhook": "^4.5",
+        "captainhook/captainhook": "^5.0",
         "webmozart/assert": "^1.5"
     },
     "require-dev": {
         "composer/composer": "^1.9",
+        "jakub-onderka/php-parallel-lint": "^1.0",
+        "laminas/laminas-coding-standard": "^2.0",
         "phpstan/extension-installer": "^1.0",
         "phpstan/phpstan": "^0.11.19",
         "phpstan/phpstan-webmozart-assert": "^0.11.3",
@@ -47,6 +49,14 @@
     "prefer-stable": true,
     "scripts": {
         "analyze": "phpstan analyze --no-progress",
-        "test": "phpunit"
+        "test": "phpunit",
+        "lint": "parallel-lint src/ tests/",
+        "cs-fix": "phpcbf",
+        "cs-check": "phpcs",
+        "check": [
+            "@lint",
+            "@test",
+            "@analyze"
+        ]
     }
 }

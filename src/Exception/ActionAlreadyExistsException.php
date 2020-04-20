@@ -1,13 +1,15 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\Exception;
 
 use RuntimeException;
 
+use function sprintf;
+
 final class ActionAlreadyExistsException extends RuntimeException implements ExceptionInterface
 {
-
     private function __construct(string $action)
     {
         parent::__construct(sprintf('Action %s already exists', $action));

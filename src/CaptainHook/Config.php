@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\CaptainHook;
@@ -11,9 +12,11 @@ use CaptainHook\App\Hooks;
 use OutOfBoundsException;
 use RuntimeException;
 use Webmozart\Assert\Assert;
+
 use function array_diff_key;
 use function array_filter;
 use function array_intersect_key;
+use function array_merge;
 use function array_values;
 use function dirname;
 use function file_exists;
@@ -22,25 +25,20 @@ use function file_put_contents;
 use function is_writable;
 use function json_decode;
 use function json_encode;
+use function sprintf;
+
 use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
 
 final class Config implements ConfigInterface
 {
-
-    /**
-     * @var HookInterface[]
-     */
+    /** @var HookInterface[] */
     private $hooks;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     private $path = '';
 
-    /**
-     * @var array
-     */
+    /** @var array */
     private $config = [];
 
     /**
@@ -55,11 +53,11 @@ final class Config implements ConfigInterface
 
     public static function fromFile(string $path): self
     {
-        $config = (array) json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
-        $hooks = (array) array_intersect_key($config, Hooks::getValidHooks());
-        $config = array_diff_key($config, $hooks);
-        $instance = self::fromArray($hooks);
-        $instance->path = $path;
+        $config           = (array) json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+        $hooks            = (array) array_intersect_key($config, Hooks::getValidHooks());
+        $config           = array_diff_key($config, $hooks);
+        $instance         = self::fromArray($hooks);
+        $instance->path   = $path;
         $instance->config = $config;
 
         return $instance;
@@ -92,16 +90,16 @@ final class Config implements ConfigInterface
 
     public function store(): bool
     {
-        if (!$this->dirty()) {
+        if (! $this->dirty()) {
             return true;
         }
 
         $path = $this->path;
-        if ((file_exists($path) && !is_writable($path)) || !is_writable(dirname($path))) {
+        if ((file_exists($path) && ! is_writable($path)) || ! is_writable(dirname($path))) {
             throw new RuntimeException(sprintf('Unable to write to %s', $this->path));
         }
 
-        $stored =  file_put_contents($path, $this->json()) !== false;
+        $stored = file_put_contents($path, $this->json()) !== false;
         if ($stored) {
             $this->stored();
         }
@@ -137,7 +135,7 @@ final class Config implements ConfigInterface
 
     public function remove(HookInterface $hook, ActionInterface $action): void
     {
-        if (!$this->exists($hook->name())) {
+        if (! $this->exists($hook->name())) {
             return;
         }
 

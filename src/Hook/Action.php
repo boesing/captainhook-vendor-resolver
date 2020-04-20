@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\Hook;
@@ -8,24 +9,19 @@ use Boesing\CaptainhookVendorResolver\Hook\Action\ConditionInterface;
 use Boesing\CaptainhookVendorResolver\Hook\Action\Options;
 use OutOfBoundsException;
 use Webmozart\Assert\Assert;
+
 use function array_map;
+use function count;
 
 final class Action implements ActionInterface
 {
-
-    /**
-     * @var string
-     */
+    /** @var string */
     private $action;
 
-    /**
-     * @var Options
-     */
+    /** @var Options */
     private $options;
 
-    /**
-     * @var ConditionInterface[]
-     */
+    /** @var ConditionInterface[] */
     private $conditions;
 
     /**
@@ -42,8 +38,8 @@ final class Action implements ActionInterface
 
     public static function fromDefinition(array $definition): self
     {
-        $action = $definition['action'] ?? '';
-        $options = new Options($definition['options'] ?? []);
+        $action     = $definition['action'] ?? '';
+        $options    = new Options($definition['options'] ?? []);
         $conditions = array_map(function (array $condition): ConditionInterface {
             return Condition::fromDefinition($condition);
         }, $definition['conditions'] ?? []);
@@ -57,7 +53,7 @@ final class Action implements ActionInterface
             return false;
         }
 
-        if (!$this->options->equals($action->options())) {
+        if (! $this->options->equals($action->options())) {
             return false;
         }
 
@@ -66,12 +62,12 @@ final class Action implements ActionInterface
         }
 
         foreach ($this->conditions as $condition) {
-            if (!$action->has($condition->exec())) {
+            if (! $action->has($condition->exec())) {
                 return false;
             }
 
             $conditionFromAction = $action->condition($condition->exec());
-            if (!$conditionFromAction->equals($condition)) {
+            if (! $conditionFromAction->equals($condition)) {
                 return false;
             }
         }
@@ -114,7 +110,7 @@ final class Action implements ActionInterface
         }
 
         $data = [
-            'action' => $this->action,
+            'action'     => $this->action,
             'conditions' => $conditions,
         ];
 

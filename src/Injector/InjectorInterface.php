@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Boesing\CaptainhookVendorResolver\Injector;
@@ -9,7 +10,6 @@ use Boesing\CaptainhookVendorResolver\Hook\HookInterface;
 
 interface InjectorInterface
 {
-
     /**
      * @throws ActionsAlreadyExistsException If one or more actions are already existing within that hook.
      */
