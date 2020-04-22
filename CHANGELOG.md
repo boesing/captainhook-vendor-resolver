@@ -22,7 +22,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- Nothing.
+- Do not read non-existent `captainhook.json` 
 
 ## 1.0.0 - 2020-04-17
 
