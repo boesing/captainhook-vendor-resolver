@@ -67,7 +67,8 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            PackageEvents::POST_PACKAGE_INSTALL   => 'onPostPackageInstall',
+            PackageEvents::POST_PACKAGE_INSTALL   => 'onPostPackageInstallOrUpdate',
+            PackageEvents::POST_PACKAGE_UPDATE    => 'onPostPackageInstallOrUpdate',
             PackageEvents::POST_PACKAGE_UNINSTALL => 'onPostPackageUninstall',
         ];
     }
@@ -80,7 +81,7 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
         $this->io = $io;
     }
 
-    public function onPostPackageInstall(PackageEvent $event): void
+    public function onPostPackageInstallOrUpdate(PackageEvent $event): void
     {
         if (! $event->isDevMode()) {
             // Do nothing in production mode.
@@ -258,7 +259,5 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
         foreach ($hooks as $hook) {
             $injector->remove($hook);
         }
-
-        $injector->store();
     }
 }
