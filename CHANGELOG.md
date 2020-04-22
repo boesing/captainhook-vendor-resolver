@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
+- Listening to composer `post-package-update` event aswell
+
 - Added some more verbosity for installation
 
 ### Changed
