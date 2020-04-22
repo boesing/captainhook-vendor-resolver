@@ -24,6 +24,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
+- Raised subscription priority to catch any package
+
 - Do not read non-existent `captainhook.json` 
 
 ## 1.0.0 - 2020-04-17

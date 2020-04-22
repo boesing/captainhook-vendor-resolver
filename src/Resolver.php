@@ -67,9 +67,9 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            PackageEvents::POST_PACKAGE_INSTALL   => 'onPostPackageInstallOrUpdate',
-            PackageEvents::POST_PACKAGE_UPDATE    => 'onPostPackageInstallOrUpdate',
-            PackageEvents::POST_PACKAGE_UNINSTALL => 'onPostPackageUninstall',
+            PackageEvents::POST_PACKAGE_INSTALL   => ['onPostPackageInstallOrUpdate', 1000],
+            PackageEvents::POST_PACKAGE_UPDATE    => ['onPostPackageInstallOrUpdate', 1000],
+            PackageEvents::POST_PACKAGE_UNINSTALL => ['onPostPackageUninstall', 1000],
         ];
     }
 
