@@ -53,7 +53,16 @@ final class Config implements ConfigInterface
 
     public static function fromFile(string $path): self
     {
-        $config           = (array) json_decode((string) file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
+        $config = [];
+        if (file_exists($path)) {
+            $config = (array) json_decode(
+                (string) file_get_contents($path),
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+        }
+
         $hooks            = (array) array_intersect_key($config, Hooks::getValidHooks());
         $config           = array_diff_key($config, $hooks);
         $instance         = self::fromArray($hooks);
