@@ -9,6 +9,7 @@ use Boesing\CaptainhookVendorResolver\Config\Config as ResolverConfig;
 use Boesing\CaptainhookVendorResolver\Config\ConfigInterface;
 use Boesing\CaptainhookVendorResolver\Exception\ActionsAlreadyExistsException;
 use Boesing\CaptainhookVendorResolver\Exception\ExceptionInterface;
+use Boesing\CaptainhookVendorResolver\Exception\InvalidArgumentException;
 use Boesing\CaptainhookVendorResolver\Exception\InvalidConfigurationException;
 use Boesing\CaptainhookVendorResolver\Hook\Action\Condition;
 use Boesing\CaptainhookVendorResolver\Hook\Action\ConditionInterface;
@@ -19,7 +20,9 @@ use Boesing\CaptainhookVendorResolver\Injector\InjectorInterface;
 use CaptainHook\App\Hooks;
 use Composer\Composer;
 use Composer\DependencyResolver\Operation\InstallOperation;
+use Composer\DependencyResolver\Operation\OperationInterface;
 use Composer\DependencyResolver\Operation\UninstallOperation;
+use Composer\DependencyResolver\Operation\UpdateOperation;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\Factory;
 use Composer\Installer\PackageEvent;
@@ -88,10 +91,8 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
             return;
         }
 
-        /** @var InstallOperation $operation */
         $operation = $event->getOperation();
-        /** @var PackageInterface $package */
-        $package = $operation->getPackage();
+        $package = $this->extractPackageFromOperation($operation);
         $extra   = $this->getExtraMetadata($package->getExtra());
 
         if (empty($extra)) {
@@ -259,5 +260,28 @@ final class Resolver implements EventSubscriberInterface, PluginInterface
         foreach ($hooks as $hook) {
             $injector->remove($hook);
         }
+    }
+
+    public function deactivate(Composer $composer, IOInterface $io)
+    {
+    }
+
+    public function uninstall(Composer $composer, IOInterface $io)
+    {
+        $resolverConfiguration = $this->discoverResolverConfiguration();
+        $resolverConfiguration->unlink();
+    }
+
+    private function extractPackageFromOperation(OperationInterface $operation): PackageInterface
+    {
+        if ($operation instanceof InstallOperation) {
+            return $operation->getPackage();
+        }
+
+        if ($operation instanceof UpdateOperation) {
+            return $operation->getTargetPackage();
+        }
+
+        throw InvalidArgumentException::fromUnsupportedOperation($operation);
     }
 }

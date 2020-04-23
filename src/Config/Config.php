@@ -179,4 +179,9 @@ final class Config implements ConfigInterface
     {
         return $this->captainhookLocation;
     }
+
+    public function unlink(): void
+    {
+        $this->delete();
+    }
 }
