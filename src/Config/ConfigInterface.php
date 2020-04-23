@@ -21,4 +21,6 @@ interface ConfigInterface
     public function remove(HookInterface $hook, ActionInterface $action): void;
 
     public function captainhookLocation(): string;
+
+    public function unlink(): void;
 }

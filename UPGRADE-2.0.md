@@ -13,3 +13,7 @@ With captainhook v5.0, Sebastian added custom `captainhook.json` location. If yo
 ``` 
 
 The `captainhook` path can be relative or absolute to your project directory.
+
+
+## Resolver ConfigInterface has new method
+The `Resolver\Config\ConfigInterface` has a new method `unlink` which will ensure that we remove configuration if the package is being deleted.
